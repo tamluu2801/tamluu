@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tạo Bảng Lật Thẻ Play Together</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #e0f7fa, #ffb6c1, #ff69b4);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #ff1493;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            margin: 15px 0 10px;
+            text-shadow: 0 0 15px rgba(255,105,180,0.6);
+        }
+        .controls, .icons, #board-container > div {
+            width: 100%;
+            max-width: 700px;
+            margin: 15px auto;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(255,105,180,0.3);
+            backdrop-filter: blur(10px);
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            color: #ff69b4;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 12px;
+            font-size: 1.2rem;
+            border: 3px solid #ff69b4;
+            border-radius: 15px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 0 10px rgba(255,105,180,0.4);
+        }
+        button {
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(#ff69b4, #ff1493);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(255,105,180,0.5);
+            transition: all 0.3s;
+        }
+        button:hover, button:active {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255,20,147,0.6);
+        }
+        .icons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .icons img {
+            width: clamp(65px, 10vw, 85px);
+            height: clamp(65px, 10vw, 85px);
+            border-radius: 20px;
+            box-shadow: 0 0 20px #ff69b4;
+            cursor: pointer;
+            transition: all 0.4s;
+            background: white;
+            padding: 5px;
+        }
+        .icons img:hover {
+            transform: scale(1.25) translateY(-10px);
+            box-shadow: 0 0 40px #ff1493, 0 0 0 8px rgba(255,105,180,0.6);
+        }
+        .icons img.selected {
+            transform: scale(1.3) translateY(-10px);
+            box-shadow: 0 0 50px #ff1493, 0 0 0 10px rgba(255,20,147,0.8);
+        }
+        #board-container {
+            width: 100%;
+            max-width: 850px;
+        }
+        #board {
+            display: grid;
+            gap: 8px;
+            padding: 18px;
+            justify-content: center;
+        }
+        .cell {
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(#ff8abd, #ff69b4);
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(255,105,180,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .cell:hover {
+            transform: scale(1.05);
+        }
+        .cell img {
+            width: 88%;
+            height: 88%;
+            border-radius: 15px;
+        }
+        .cell::after {
+            content: '🎀';
+            font-size: 20px;
+            opacity: 0.3;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        @media (max-width: 600px) {
+            .icons { gap: 6px; }
+            .icons img { width: 70px; height: 70px; }
+            button { padding: 12px 24px; font-size: 1.1rem; }
+            #board { gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Não Cá Vàng</h1>
+
+    <div class="controls">
+        <div class="input-group">
+            <label>Hàng:</label>
+            <input type="number" id="rows" min="2" max="8" value="3">
+            <label>Cột:</label>
+            <input type="number" id="cols" min="2" max="10" value="6">
+        </div>
+        <button onclick="createGrid()">Tạo</button>
+    </div>
+
+    <div class="icons">
+        <img src="https://game-playtogether.vercel.app/1.png" alt="1">
+        <img src="https://game-playtogether.vercel.app/2.png" alt="2">
+        <img src="https://game-playtogether.vercel.app/3.png" alt="3">
+        <img src="https://game-playtogether.vercel.app/4.png" alt="4">
+        <img src="https://game-playtogether.vercel.app/5.png" alt="5">
+        <img src="https://game-playtogether.vercel.app/6.png" alt="6">
+        <img src="https://game-playtogether.vercel.app/7.png" alt="7">
+        <img src="https://game-playtogether.vercel.app/8.png" alt="8">
+        <img src="https://game-playtogether.vercel.app/9.png" alt="9">
+    </div>
+
+    <div id="board-container">
+        <div id="board"></div>
+    </div>
+
+    <script>
+        let selectedIconSrc = null;
+
+        document.querySelectorAll('.icons img').forEach(img => {
+            img.onclick = function() {
+                document.querySelectorAll('.icons img.selected').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedIconSrc = this.src;
+            };
+        });
+
+        function createGrid() {
+            const rows = parseInt(document.getElementById('rows').value) || 3;
+            const cols = parseInt(document.getElementById('cols').value) || 6;
+            const total = rows * cols;
+            if (total % 2 !== 0) {
+                alert('Tổng số ô phải chẵn để đủ cặp nhé cục dàng! 💕');
+                return;
+            }
+
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+            for (let i = 0; i < total; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+
+                cell.onclick = function() {
+                    if (!selectedIconSrc) {
+                        alert('Chọn một biểu tượng cute ở trên trước nha cục dàng! 🌸');
+                        return;
+                    }
+                    this.innerHTML = `<img src="${selectedIconSrc}">`;
+                    document.querySelectorAll('.icons img.selected').forEach(i => i.classList.remove('selected'));
+                    selectedIconSrc = null;
+                };
+
+                board.appendChild(cell);
+            }
+        }
+
+        window.onload = createGrid;
+    </script>
+</body>
+</html>
