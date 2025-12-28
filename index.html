@@ -183,7 +183,7 @@
         <div class="buttons">
             <button onclick="createGrid()">Tạo bàn mới</button>
             <button id="clear-all" onclick="clearAll()">Xóa tất cả</button>
-            <button id="draw-mode" onclick="toggleDrawMode()">Bút vẽ (Off)</button>
+            <button id="draw-mode" onclick="toggleDrawMode()">Bút vẽ</button>
         </div>
     </div>
 
@@ -206,6 +206,7 @@
     <script>
         let selectedIconSrc = null;
         let drawMode = false;
+        let drawCount = 0; // Đếm số lần gạch khi bút vẽ bật
         let rows = 3;
         let cols = 6;
 
@@ -219,6 +220,7 @@
 
         function toggleDrawMode() {
             drawMode = !drawMode;
+            drawCount = 0; // Reset đếm khi bật/tắt
             const btn = document.getElementById('draw-mode');
             btn.textContent = `Bút vẽ (${drawMode ? 'On' : 'Off'})`;
             btn.classList.toggle('active', drawMode);
@@ -228,7 +230,6 @@
             if (confirm('Xóa sạch tất cả icon và dấu gạch trên bảng nha cục dàng ơi! 🗑️')) {
                 const cells = document.querySelectorAll('.cell');
                 if (cells.length === 0) {
-                    alert('Bảng trống rồi cục dàng ơi!');
                     return;
                 }
                 cells.forEach(cell => {
@@ -244,7 +245,6 @@
             cols = parseInt(document.getElementById('cols').value) || 6;
             const total = rows * cols;
             if (total % 2 !== 0) {
-                alert('Tổng số ô phải chẵn để đủ cặp nhé cục dàng ơi! 💕');
                 return;
             }
 
@@ -258,18 +258,24 @@
 
                 cell.onclick = function() {
                     if (drawMode) {
+                        if (!this.classList.contains('marked')) { // Chỉ đếm khi gạch mới
+                            drawCount++;
+                        }
                         this.classList.toggle('marked');
                         saveBoard();
+
+                        if (drawCount >= 2) {
+                            // Tự tắt sau 2 lần gạch
+                            toggleDrawMode();
+                        }
                         return;
                     }
-                    if (!selectedIconSrc) {
-                        alert('Chọn một biểu tượng cute ở trên trước nha cục dàng ơi! 🌸');
-                        return;
+                    if (selectedIconSrc) {
+                        this.innerHTML = `<img src="${selectedIconSrc}">`;
+                        document.querySelectorAll('.icons img.selected').forEach(i => i.classList.remove('selected'));
+                        selectedIconSrc = null;
+                        saveBoard();
                     }
-                    this.innerHTML = `<img src="${selectedIconSrc}">`;
-                    document.querySelectorAll('.icons img.selected').forEach(i => i.classList.remove('selected'));
-                    selectedIconSrc = null;
-                    saveBoard();
                 };
 
                 board.appendChild(cell);
